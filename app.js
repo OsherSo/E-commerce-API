@@ -8,14 +8,14 @@ const connectDB = require('./db/connect');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 
+const authRouter = require('./routes/auth');
+
 const app = express();
 
 app.use(morgan('tiny'));
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Home Page');
-});
+app.use('/api/v1/auth', authRouter);
 
 app.use(notFound);
 app.use(errorHandler);
