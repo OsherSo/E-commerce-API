@@ -2,6 +2,7 @@ require('dotenv').config();
 require('express-async-errors');
 const morgan = require('morgan');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./db/connect');
 
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(morgan('tiny'));
 app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.use('/api/v1/auth', authRouter);
 
