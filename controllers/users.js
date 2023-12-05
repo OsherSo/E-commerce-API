@@ -4,7 +4,7 @@ const User = require('../models/User');
 const { NotFound } = require('../errors');
 
 const getAllUsers = async (req, res) => {
-  const users = await User.find({ role: 'user' });
+  const users = await User.find({ role: 'user' }).select('-password');
 
   res.status(StatusCodes.OK).json({
     count: users.length,
@@ -13,7 +13,7 @@ const getAllUsers = async (req, res) => {
 };
 
 const getSingleUser = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id });
+  const user = await User.findOne({ _id: req.params.id }).select('-password');
   if (!user) throw new NotFound('No user found');
 
   res.status(StatusCodes.OK).json({

@@ -8,11 +8,11 @@ const {
   updateUserPassword,
 } = require('../controllers/users');
 
-const { authUser } = require('../middleware/auth');
+const { authUser, authPermissions } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.route('/').get(authUser, getAllUsers);
+router.route('/').get(authUser, authPermissions('admin'), getAllUsers);
 
 router.route('/showMe').get(showCurrentUser);
 router.route('/updateUser').patch(updateUser);

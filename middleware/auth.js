@@ -1,4 +1,4 @@
-const { Unauthorized } = require('../errors');
+const { Unauthorized, Forbidden } = require('../errors');
 const { verifyToken } = require('../utils/jwt');
 
 const authUser = (req, res, next) => {
@@ -14,6 +14,15 @@ const authUser = (req, res, next) => {
   }
 };
 
+const authPermissions = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      throw new Forbidden('You dont have permissions');
+    next();
+  };
+};
+
 module.exports = {
   authUser,
+  authPermissions,
 };
