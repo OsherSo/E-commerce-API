@@ -2,7 +2,11 @@ const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
 const { NotFound, BadRequest, Unauthorized } = require('../errors');
-const { attachCookiesToResponse, createTokenUser } = require('../utils/jwt');
+const {
+  attachCookiesToResponse,
+  createTokenUser,
+  checkPermissions,
+} = require('../utils/jwt');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -16,6 +20,8 @@ const getAllUsers = async (req, res) => {
 const getSingleUser = async (req, res) => {
   const user = await User.findOne({ _id: req.params.id }).select('-password');
   if (!user) throw new NotFound('No user found');
+
+  checkPermissions(req.user, user._id);
 
   res.status(StatusCodes.OK).json({
     user,

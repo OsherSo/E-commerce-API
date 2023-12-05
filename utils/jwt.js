@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const { Forbidden } = require('../errors');
+
 const createJWT = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_LIFETIME,
@@ -23,9 +25,16 @@ const createTokenUser = (user) => {
   return { userId: user._id, name: user.name, role: user.role };
 };
 
+const checkPermissions = (requestUser, resourceUserId) => {
+  if (requestUser.role === 'admin') return;
+  if (requestUser.userId === resourceUserId.toString()) return;
+  throw new Forbidden('You dont have permission');
+};
+
 module.exports = {
   createJWT,
   attachCookiesToResponse,
   verifyToken,
   createTokenUser,
+  checkPermissions,
 };
