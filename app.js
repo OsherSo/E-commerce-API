@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const connectDB = require('./db/connect');
 
+const { authUser } = require('./middleware/auth');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/users', authUser, usersRouter);
 
 app.use(notFound);
 app.use(errorHandler);
