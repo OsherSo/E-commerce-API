@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
-const { NotFound } = require('../errors');
+const { NotFound, BadRequest, Unauthorized } = require('../errors');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -22,7 +22,7 @@ const getSingleUser = async (req, res) => {
 };
 
 const showCurrentUser = async (req, res) => {
-  res.send('showCurrentUser');
+  res.status(StatusCodes.OK).json({ user: req.user });
 };
 
 const updateUser = async (req, res) => {
@@ -30,7 +30,18 @@ const updateUser = async (req, res) => {
 };
 
 const updateUserPassword = async (req, res) => {
-  res.send('updateUserPassword');
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword)
+    throw new BadRequest('Please provide both values');
+
+  const user = await User.findOne({ _id: req.user.userId });
+  if (!(await user.comparePassword(oldPassword)))
+    throw new Unauthorized('Invalid Credentials');
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(StatusCodes.OK).json({ msg: 'Success! Password Updated' });
 };
 
 module.exports = {

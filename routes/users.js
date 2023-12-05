@@ -14,9 +14,9 @@ const router = express.Router();
 
 router.route('/').get(authUser, authPermissions('admin'), getAllUsers);
 
-router.route('/showMe').get(showCurrentUser);
+router.route('/showMe').get(authUser, showCurrentUser);
 router.route('/updateUser').patch(updateUser);
-router.route('/updateUserPassword').patch(updateUserPassword);
+router.route('/updateUserPassword').patch(authUser, updateUserPassword);
 
 router.route('/:id').get(authUser, getSingleUser);
 
