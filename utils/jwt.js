@@ -19,8 +19,13 @@ const attachCookiesToResponse = (res, payload) => {
 
 const verifyToken = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
+const createTokenUser = (user) => {
+  return { userId: user._id, name: user.name, role: user.role };
+};
+
 module.exports = {
   createJWT,
   attachCookiesToResponse,
   verifyToken,
+  createTokenUser,
 };
