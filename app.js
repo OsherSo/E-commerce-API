@@ -12,6 +12,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const productsRouter = require('./routes/products');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser(process.env.JWT_SECRET));
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', authUser, usersRouter);
+app.use('/api/v1/products', productsRouter);
 
 app.use(notFound);
 app.use(errorHandler);
