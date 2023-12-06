@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema(
     },
     colors: {
       type: [String],
-      required: true,
+      default: ['#222'],
     },
     featured: {
       type: Boolean,
@@ -52,7 +52,7 @@ const productSchema = new mongoose.Schema(
     },
     inventory: {
       type: Number,
-      required: true,
+      default: 0,
     },
     averageRating: {
       type: Number,
