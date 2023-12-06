@@ -8,13 +8,19 @@ const Product = require('../models/Product');
 const { checkPermissions } = require('../utils/jwt');
 
 const getAllReviews = async (req, res) => {
-  const reviews = await Review.find({});
+  const reviews = await Review.find({}).populate({
+    path: 'product',
+    select: 'name company price',
+  });
 
   res.status(StatusCodes.OK).json({ count: reviews.length, reviews });
 };
 
 const getSingleReview = async (req, res) => {
-  const review = await Review.findOne({ _id: req.params.id });
+  const review = await Review.findOne({ _id: req.params.id }).populate({
+    path: 'product',
+    select: 'name company price',
+  });
   if (!review) throw new NotFound('No review found');
 
   res.status(StatusCodes.OK).json({ review });
