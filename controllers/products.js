@@ -1,7 +1,9 @@
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
 
+const Review = require('../models/Review');
 const Product = require('../models/Product');
+
 const { NotFound, BadRequest } = require('../errors');
 
 const getAllProducts = async (req, res) => {
@@ -12,7 +14,7 @@ const getAllProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
   const product = await Product.findOne({ _id: req.params.id });
-  if (!product) throw new NotFound('No product found');
+  if (!product) throw new NotFound('Product not found');
 
   res.status(StatusCodes.OK).json({ product });
 };
@@ -30,13 +32,19 @@ const updateProduct = async (req, res) => {
     req.body,
     { new: true, runValidators: true }
   );
-  if (!product) throw new NotFound('No product found');
+  if (!product) throw new NotFound('Product not found');
 
   res.status(StatusCodes.OK).json({ product });
 };
 
 const deleteProduct = async (req, res) => {
-  await Product.findOneAndDelete({ _id: req.params.id, user: req.user.userId });
+  const product = await Product.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
+  if (!product) throw new NotFound('Product not found');
+
+  await Review.deleteMany({ product: product._id });
 
   res.status(StatusCodes.OK).json({ product: null });
 };
