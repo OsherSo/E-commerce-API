@@ -3,6 +3,7 @@ require('express-async-errors');
 const morgan = require('morgan');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 
 const connectDB = require('./db/connect');
 
@@ -16,9 +17,11 @@ const productsRouter = require('./routes/products');
 
 const app = express();
 
+app.use(express.static('./public'));
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(fileUpload());
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', authUser, usersRouter);
