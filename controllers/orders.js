@@ -11,15 +11,25 @@ const fakeStripeAPI = async ({ amount, currency }) => {
 };
 
 const getAllOrders = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'getAllOrders' });
+  const orders = await Order.find({ user: req.user.userId });
+
+  res.status(StatusCodes.OK).json({ count: orders.length, orders });
 };
 
 const getSingleOrder = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'getSingleOrder' });
+  const order = await Order.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
+  if (!order) throw new NotFound(`No product found`);
+
+  res.status(StatusCodes.OK).json({ order });
 };
 
 const getCurrentUserOrders = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'getCurrentUserOrders' });
+  const orders = await Order.find({ user: req.user.userId });
+
+  res.status(StatusCodes.OK).json({ count: orders.length, orders });
 };
 
 const createOrder = async (req, res) => {
@@ -65,7 +75,20 @@ const createOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'updateOrder' });
+  const { paymentIntentId } = req.body;
+
+  const order = await Order.findOne({
+    _id: req.params.id,
+    user: req.user.userId,
+  });
+  if (!order) throw new NotFound(`No product found`);
+
+  order.paymentId = paymentIntentId;
+  order.status = 'paid';
+
+  await order.save();
+
+  res.status(StatusCodes.OK).json({ msg: order });
 };
 
 module.exports = {
