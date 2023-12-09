@@ -2,7 +2,7 @@ const { Unauthorized, Forbidden } = require('../errors');
 const { verifyToken } = require('../utils/jwt');
 
 const authUser = (req, res, next) => {
-  const token = req.signedCookies.token;
+  const { token } = req.signedCookies;
   if (!token) throw new Unauthorized('Authentication Invalid');
 
   try {
@@ -14,13 +14,13 @@ const authUser = (req, res, next) => {
   }
 };
 
-const authPermissions = (...roles) => {
-  return (req, res, next) => {
+const authPermissions =
+  (...roles) =>
+  (req, res, next) => {
     if (!roles.includes(req.user.role))
       throw new Forbidden('You dont have permissions');
     next();
   };
-};
 
 module.exports = {
   authUser,

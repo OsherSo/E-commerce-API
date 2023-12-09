@@ -5,8 +5,6 @@ const { NotFound, BadRequest } = require('../errors');
 const Review = require('../models/Review');
 const Product = require('../models/Product');
 
-const { checkPermissions } = require('../utils/jwt');
-
 const getAllReviews = async (req, res) => {
   const reviews = await Review.find({}).populate({
     path: 'product',

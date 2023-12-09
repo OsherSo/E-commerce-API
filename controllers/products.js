@@ -30,7 +30,7 @@ const updateProduct = async (req, res) => {
   const product = await Product.findOneAndUpdate(
     { _id: req.params.id, user: req.user.userId },
     req.body,
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
   if (!product) throw new NotFound('Product not found');
 
@@ -61,8 +61,8 @@ const uploadImage = async (req, res) => {
   if (productImage.size > maxSize)
     throw new BadRequest('Please upload image smaller 1KB');
 
-  const name = productImage.name;
-  const imagePath = path.join(__dirname, '../public/uploads/' + `${name}`);
+  const { name } = productImage;
+  const imagePath = path.join(__dirname, `../public/uploads/${name}`);
   await productImage.mv(imagePath);
 
   res.status(StatusCodes.OK).json({

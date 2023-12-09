@@ -21,9 +21,7 @@ const attachCookiesToResponse = (res, payload) => {
 
 const verifyToken = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
-const createTokenUser = (user) => {
-  return { userId: user._id, name: user.name, role: user.role };
-};
+const createTokenUser = ({ _id, name, role }) => ({ userId: _id, name, role });
 
 const checkPermissions = (requestUser, resourceUserId) => {
   if (requestUser.role === 'admin') return;

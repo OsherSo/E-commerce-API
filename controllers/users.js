@@ -39,7 +39,7 @@ const updateUser = async (req, res) => {
   const user = await User.findOneAndUpdate(
     { _id: req.user.userId },
     { name, email },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   const tokenUser = createTokenUser(user);
