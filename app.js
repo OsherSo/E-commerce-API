@@ -13,6 +13,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const ordersRouter = require('./routes/orders');
 const reviewsRouter = require('./routes/reviews');
 const productsRouter = require('./routes/products');
 
@@ -28,6 +29,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', authUser, usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/orders', ordersRouter);
 
 app.use(notFound);
 app.use(errorHandler);
