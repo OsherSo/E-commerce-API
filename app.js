@@ -5,6 +5,12 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 
+const cors = require('cors');
+const xss = require('xss-clean');
+const helmet = require('helmet');
+const rateLimiter = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+
 const connectDB = require('./db/connect');
 
 const { authUser } = require('./middleware/auth');
@@ -18,6 +24,21 @@ const reviewsRouter = require('./routes/reviews');
 const productsRouter = require('./routes/products');
 
 const app = express();
+
+app.set('trust proxy', 1);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000,
+    limit: 60,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+  }),
+);
+
+app.use(xss());
+app.use(cors());
+app.use(helmet());
+app.use(mongoSanitize());
 
 app.use(express.static('./public'));
 app.use(morgan('tiny'));
