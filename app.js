@@ -1,6 +1,5 @@
 require('dotenv').config();
 require('express-async-errors');
-const morgan = require('morgan');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
@@ -41,7 +40,6 @@ app.use(helmet());
 app.use(mongoSanitize());
 
 app.use(express.static('./public'));
-app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(fileUpload());
