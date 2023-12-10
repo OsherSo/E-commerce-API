@@ -20,6 +20,20 @@ const register = async (req, res) => {
   });
 };
 
+const verifyEmail = async (req, res) => {
+  const { verificationToken, email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user || user.verificationToken !== verificationToken)
+    throw new Unauthorized('Verification Failed');
+
+  user.verified = Date.now();
+  user.isVerified = true;
+  await user.save();
+
+  res.status(StatusCodes.OK).json({ msg: 'Email Verified' });
+};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -47,6 +61,7 @@ const logout = async (req, res) => {
 
 module.exports = {
   register,
+  verifyEmail,
   login,
   logout,
 };
