@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
@@ -7,11 +8,16 @@ const { attachCookiesToResponse, createTokenUser } = require('../utils/jwt');
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const user = await User.create({ name, email, password });
-  const tokenUser = createTokenUser(user);
-  attachCookiesToResponse(res, tokenUser);
+  const emailAlreadyExists = await User.findOne({ email });
+  if (emailAlreadyExists) throw new BadRequest('Email already exists');
 
-  res.status(StatusCodes.CREATED).json({ user: tokenUser });
+  const verificationToken = crypto.randomBytes(40).toString('hex');
+  await User.create({ name, email, password, verificationToken });
+
+  res.status(StatusCodes.CREATED).json({
+    msg: 'Success! Please check your email to verify account',
+    verificationToken,
+  });
 };
 
 const login = async (req, res) => {
@@ -22,6 +28,7 @@ const login = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user || !(await user.comparePassword(password)))
     throw new Unauthorized('Invalid Credentials');
+  if (!user.isVerified) throw new Unauthorized('Please verify your email');
 
   const tokenUser = createTokenUser(user);
   attachCookiesToResponse(res, tokenUser);

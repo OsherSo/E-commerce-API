@@ -6,14 +6,15 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
+    lowercase: true,
     required: [true, 'Name is required'],
-    minLength: [3, 'Name must be at least 3 characters'],
-    maxLength: [50, 'Name cannot exceed 50 characters'],
+    minLength: [2, 'Name must be at least 2 characters'],
+    maxLength: [30, 'Name cannot exceed 30 characters'],
   },
   email: {
     type: String,
-    unique: true,
     trim: true,
+    lowercase: true,
     required: [true, 'Email is required'],
     validate: {
       validator: validator.isEmail,
@@ -29,6 +30,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['user', 'admin'],
     default: 'user',
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'verificationToken is required'],
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verified: {
+    type: Date,
   },
 });
 
