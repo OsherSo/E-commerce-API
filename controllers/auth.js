@@ -3,6 +3,8 @@ const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
 const { BadRequest, Unauthorized } = require('../errors');
+
+const { sendEmail } = require('../utils/email');
 const { attachCookiesToResponse, createTokenUser } = require('../utils/jwt');
 
 const register = async (req, res) => {
@@ -14,9 +16,10 @@ const register = async (req, res) => {
   const verificationToken = crypto.randomBytes(40).toString('hex');
   await User.create({ name, email, password, verificationToken });
 
+  await sendEmail();
+
   res.status(StatusCodes.CREATED).json({
     msg: 'Success! Please check your email to verify account',
-    verificationToken,
   });
 };
 
