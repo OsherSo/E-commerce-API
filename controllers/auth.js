@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
+const Token = require('../models/Token');
+
 const { BadRequest, Unauthorized } = require('../errors');
 
 const { sendVerificationEmail } = require('../utils/email');
@@ -49,9 +51,21 @@ const login = async (req, res) => {
   if (!user.isVerified) throw new Unauthorized('Please verify your email');
 
   const tokenUser = createTokenUser(user);
+
+  let refreshToken = '';
+  refreshToken = crypto.randomBytes(40).toString('hex');
+  const userAgent = req.headers['user-agent'];
+  const { ip } = req;
+  const token = await Token.create({
+    refreshToken,
+    ip,
+    userAgent,
+    user: user._id,
+  });
+
   attachCookiesToResponse(res, tokenUser);
 
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  res.status(StatusCodes.OK).json({ user: tokenUser, token });
 };
 
 const logout = async (req, res) => {
