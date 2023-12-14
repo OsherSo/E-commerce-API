@@ -53,15 +53,21 @@ const login = async (req, res) => {
   const tokenUser = createTokenUser(user);
 
   let refreshToken = '';
-  refreshToken = crypto.randomBytes(40).toString('hex');
-  const userAgent = req.headers['user-agent'];
-  const { ip } = req;
-  await Token.create({
-    refreshToken,
-    ip,
-    userAgent,
-    user: user._id,
-  });
+  const existingToken = await Token.findOne({ user: user._id });
+  if (existingToken) {
+    if (!existingToken.isValid) throw new Unauthorized('Invalid Credentials');
+    refreshToken = existingToken.refreshToken;
+  } else {
+    refreshToken = crypto.randomBytes(40).toString('hex');
+    const userAgent = req.headers['user-agent'];
+    const { ip } = req;
+    await Token.create({
+      refreshToken,
+      ip,
+      userAgent,
+      user: user._id,
+    });
+  }
 
   attachCookiesToResponse({ res, tokenUser, refreshToken });
 
