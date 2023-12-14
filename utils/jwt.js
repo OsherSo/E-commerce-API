@@ -2,16 +2,21 @@ const jwt = require('jsonwebtoken');
 
 const { Forbidden } = require('../errors');
 
-const createJWT = (payload) =>
-  jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_LIFETIME,
-  });
+const createJWT = ({ payload }) => jwt.sign(payload, process.env.JWT_SECRET);
 
-const attachCookiesToResponse = (res, payload) => {
-  const token = createJWT(payload);
+const attachCookiesToResponse = ({ res, tokenUser, refreshToken }) => {
+  const accessTokenJWT = createJWT({ payload: { tokenUser } });
+  const refreshTokenJWT = createJWT({ payload: { tokenUser, refreshToken } });
 
   const oneDay = 1 * 24 * 60 * 60 * 1000;
-  res.cookie('token', token, {
+
+  res.cookie('accessToken', accessTokenJWT, {
+    httpOnly: true,
+    expires: new Date(Date.now() + oneDay),
+    secure: process.env.NODE_ENV === 'production',
+    signed: true,
+  });
+  res.cookie('refreshToken', refreshTokenJWT, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: process.env.NODE_ENV === 'production',

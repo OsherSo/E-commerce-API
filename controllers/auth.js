@@ -56,16 +56,16 @@ const login = async (req, res) => {
   refreshToken = crypto.randomBytes(40).toString('hex');
   const userAgent = req.headers['user-agent'];
   const { ip } = req;
-  const token = await Token.create({
+  await Token.create({
     refreshToken,
     ip,
     userAgent,
     user: user._id,
   });
 
-  attachCookiesToResponse(res, tokenUser);
+  attachCookiesToResponse({ res, tokenUser, refreshToken });
 
-  res.status(StatusCodes.OK).json({ user: tokenUser, token });
+  res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
 const logout = async (req, res) => {
